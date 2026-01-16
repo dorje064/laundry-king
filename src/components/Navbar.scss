@@ -1,0 +1,60 @@
+@use '../styles/variables' as *;
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(16px);
+  border-bottom: $glass-border;
+  padding: 16px 0;
+
+  .navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    &-icon {
+      font-size: 1.8rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      @include gradient-text;
+      font-weight: 700;
+    }
+  }
+
+  .profile-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    .user-greeting {
+      color: $text-secondary;
+      font-size: 0.9rem;
+      display: none;
+      
+      @media (min-width: 640px) {
+        display: block;
+      }
+    }
+  }
+
+  .profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .avatar {
+    font-size: 1.2rem;
+  }
+}

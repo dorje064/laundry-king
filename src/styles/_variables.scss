@@ -1,0 +1,36 @@
+// Variables
+$bg-color: #0f172a;
+$card-bg: rgba(30, 41, 59, 0.7);
+$text-primary: #f8fafc;
+$text-secondary: #94a3b8;
+$accent-color: #38bdf8;
+$accent-hover: #0ea5e9;
+$gold: #fbbf24;
+$danger: #ef4444;
+$success: #22c55e;
+$glass-border: 1px solid rgba(255, 255, 255, 0.1);
+$radius: 12px;
+$shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+// Mixins
+@mixin glass-card {
+  background: $card-bg;
+  backdrop-filter: blur(12px);
+  border: $glass-border;
+  border-radius: $radius;
+  padding: 24px;
+  box-shadow: $shadow;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin gradient-text {
+  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
