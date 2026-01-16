@@ -125,7 +125,7 @@
 /* Location */
 .location-input-wrapper {
   position: relative;
-
+  
   .location-btn {
     position: absolute;
     bottom: 12px;
@@ -139,6 +139,18 @@
       cursor: wait;
     }
   }
+}
+
+.map-container {
+  margin-top: 15px;
+  border-radius: $radius;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  height: 300px;
+  width: 100%;
+  
+  // Ensure z-index is lower than any overlays if needed, but standard should be fine
+  z-index: 1; 
 }
 
 .submit-btn {

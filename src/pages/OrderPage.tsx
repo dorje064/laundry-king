@@ -3,6 +3,21 @@ import './OrderPage.scss';
 import { ClothItem, OrderState } from '../types';
 import { useMutation } from '@tanstack/react-query';
 import { submitOrder } from '../api/orders';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icon missing in Leaflet + Vite/Webpack
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
 
 const CLOTH_ITEMS: ClothItem[] = [
   { id: 'shirt', name: 'Shirt', icon: '👔', price: 35 },
@@ -18,6 +33,7 @@ const OrderPage: React.FC = () => {
   );
   const [phone, setPhone] = useState<string>('');
   const [location, setLocation] = useState<string>('');
+  const [mapPosition, setMapPosition] = useState<[number, number] | null>(null);
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [submittedOrder, setSubmittedOrder] = useState<OrderState | null>(null);
 
@@ -30,6 +46,7 @@ const OrderPage: React.FC = () => {
       setQuantities(CLOTH_ITEMS.reduce((acc, item) => ({ ...acc, [item.id]: 0 }), {}));
       setPhone('');
       setLocation('');
+      setMapPosition(null);
     },
     onError: (error: unknown) => {
       console.error('Failed to submit order:', error);
@@ -52,10 +69,24 @@ const OrderPage: React.FC = () => {
 
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude } = position.coords;
-        setLocation(`Lat: ${latitude.toFixed(4)}, Long: ${longitude.toFixed(4)}`);
-        setIsLocating(false);
+        setMapPosition([latitude, longitude]);
+
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await response.json();
+          if (data && data.display_name) {
+            setLocation(data.display_name);
+          } else {
+            setLocation(`Lat: ${latitude.toFixed(4)}, Long: ${longitude.toFixed(4)}`);
+          }
+        } catch (error) {
+          console.error("Error fetching address:", error);
+          setLocation(`Lat: ${latitude.toFixed(4)}, Long: ${longitude.toFixed(4)}`);
+        } finally {
+          setIsLocating(false);
+        }
       },
       (error) => {
         console.error("Error getting location:", error);
@@ -185,6 +216,22 @@ const OrderPage: React.FC = () => {
                 {isLocating ? 'Locating...' : '🎯 Auto Detect'}
               </button>
             </div>
+
+            {mapPosition && (
+              <div className="map-container">
+                <MapContainer center={mapPosition} zoom={15} style={{ height: '100%', width: '100%' }}>
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  <Marker position={mapPosition}>
+                    <Popup>
+                      Your Location
+                    </Popup>
+                  </Marker>
+                </MapContainer>
+              </div>
+            )}
           </div>
         </section>
 
